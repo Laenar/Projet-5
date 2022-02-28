@@ -6,7 +6,7 @@ This is the front end and back end server for Project 5 of the Web Developer pat
 
 You will need to have Node and `npm` installed locally on your machine.
 
-### Back end Installation ###
+### Installation Back end ###
 
 Clonez ce dépôt. Depuis le dossier "back" du projet, exécutez `npm install`. Toi
 peut alors exécuter le serveur avec `node server`. 
