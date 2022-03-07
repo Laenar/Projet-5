@@ -59,13 +59,13 @@ document.getElementById('order').addEventListener('click', (event) =>{
   }
 });
 
-function innit()  {
+function innit() // Fonction init du pannier
+{
     if (sessionStorage == 0) {
-        window.location.href ="index.html";
+        window.location.href ="index.html"; // retour vers Home si panier vide
     } else {
         let onStorage = false;
-        for (let index = 1; index <= sessionStorage.length; index++) {
-
+        for (let index = 1; index <= sessionStorage.length; index++) { // Lecture storage et extraction des données
           if (sessionStorage.getItem(index) != "null") {
             const item = (sessionStorage.getItem(index).split(','));
             getProduct(item[0],item[1],item[2],0);
@@ -73,7 +73,9 @@ function innit()  {
         }
     }
 }
-function getProduct(id,color, number, mode) {
+
+function getProduct(id,color, number, mode) 
+{
     fetch("http://localhost:3000/api/products/"+id)
     .then(function(res) {
       if (res.ok) {
