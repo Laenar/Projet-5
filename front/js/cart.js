@@ -7,31 +7,34 @@ let productPrice;
 
 innit();
 updatePrice();
-for (let index = 0; index < eltForm.length/2; index++) {
+
+for (let index = 0; index < eltForm.length/2; index++) { //event controle texte saisie
   eltForm[index].addEventListener('change', function() {
     eltForm[index+(eltForm.length/2)].textContent = verifForm(orderVerrif[index],this.value);
   });
 }
 
-document.getElementById('order').addEventListener('click', (event) =>{
+document.getElementById('order').addEventListener('click', (event) => // Event qui controle la validité des données saisie dens le formulaire ET envoie la commende
+{
   event.preventDefault();
-  let verif = false;
+  let verif = false;  // Si vrai alors pas de requette 
   for (let index = 0; index < eltForm.length/2; index++) {
     if (verifForm(orderVerrif[index],eltForm[index].value) != '') {
       eltForm[index+(eltForm.length/2)].textContent = verifForm(orderVerrif[index],eltForm[index].value);
       verif = true;
     }
   }
+
   if (!verif) {
     let products = [];
-    for (let index = 1; index <= sessionStorage.length; index++) {
-      if (sessionStorage.getItem(index) != "null") {
-        const item = (sessionStorage.getItem(index).split(','));
+    for (let index = 1; index <= localStorage.length; index++) {
+      if (localStorage.getItem(index) != "null") {
+        const item = (localStorage.getItem(index).split(','));
         products.push(item[0]);
       }
     }
   
-      const order = {
+      const order = { //Mise en forme recuperation value
         contact : {
           firstName : eltForm[0].value,
           lastName : eltForm[1].value,
@@ -51,6 +54,7 @@ document.getElementById('order').addEventListener('click', (event) =>{
         },
     };
     
+      // envoie reqette 
       fetch("http://localhost:3000/api/products/order", options)
           .then(response => response.json())
           .then(data => {
@@ -61,20 +65,20 @@ document.getElementById('order').addEventListener('click', (event) =>{
 
 function innit() // Fonction init du pannier
 {
-    if (sessionStorage == 0) {
+    if (localStorage == 0) {
         window.location.href ="index.html"; // retour vers Home si panier vide
     } else {
         let onStorage = false;
-        for (let index = 1; index <= sessionStorage.length; index++) { // Lecture storage et extraction des données
-          if (sessionStorage.getItem(index) != "null") {
-            const item = (sessionStorage.getItem(index).split(','));
+        for (let index = 1; index <= localStorage.length; index++) { // Lecture storage et extraction des données
+          if (localStorage.getItem(index) != "null") {
+            const item = (localStorage.getItem(index).split(','));
             getProduct(item[0],item[1],item[2],0);
           }
         }
     }
 }
 
-function getProduct(id,color, number, mode) 
+function getProduct(id,color, number, mode) // permet d'optenir les produit (fonctionne avec une var id)
 {
     fetch("http://localhost:3000/api/products/"+id)
     .then(function(res) {
@@ -96,7 +100,8 @@ function getProduct(id,color, number, mode)
       console.log("Une erreur est survenue :\n\t"+err);
     });
 }
-function printProducts (product, id, color, number) {
+function printProducts (product, id, color, number) // Clonne le template pour le remplir et l'ajouter a la workSection, cree les callback pour le prix et la suppr
+{
 
   const cloneElt = document.importNode(mainTemplate.content, true);
   let elt = cloneElt.children[0];    
@@ -117,7 +122,7 @@ function printProducts (product, id, color, number) {
 
   let eltSettings = elt.children[0];
   eltSettings.children[1].setAttribute('value',number);
-  eltSettings.children[1].addEventListener("click", (event)=>{ 
+  eltSettings.children[1].addEventListener("click", (event)=>{ //callBack modifie une quantité demande
     const article = (event.target).closest("article");
     let data_Product = [article.getAttribute('data-id'),article.getAttribute('data-color')];
     changeQte(event.target, data_Product);
@@ -125,7 +130,7 @@ function printProducts (product, id, color, number) {
   })
 
   eltSettings = elt.children[1];
-  eltSettings.children[0].addEventListener("click", (event)=>{ 
+  eltSettings.children[0].addEventListener("click", (event)=>{  //callBack supprime un article demande
     const article = (event.target).closest("article");
     let data_Product = [article.getAttribute('data-id'),article.getAttribute('data-color')];
     delProduct(article, data_Product);
@@ -136,11 +141,11 @@ function printProducts (product, id, color, number) {
 }
 // Fonction appeler par callBack supprime un article demande l'article et son id
 function delProduct (article, data_Product) {
-  for (let index = 1; index <= sessionStorage.length; index++) {
-    if(sessionStorage[index] != "null") {
-      const item = (sessionStorage.getItem(index).split(','));
+  for (let index = 1; index <= localStorage.length; index++) {
+    if(localStorage[index] != "null") {
+      const item = (localStorage.getItem(index).split(','));
       if (item[0] == data_Product[0] && item[1] == data_Product[1]) {
-        sessionStorage.setItem(index,null);
+        localStorage.setItem(index,null);
         article.remove();
       }
     }
@@ -149,17 +154,18 @@ function delProduct (article, data_Product) {
 }
 // Fonction appeler par callBack modifie unequantité demande input et son id
 function changeQte (input, data_Product) {
-  for (let index = 1; index <= sessionStorage.length; index++) {
-    if(sessionStorage[index] != "null") {
-      const item = (sessionStorage.getItem(index).split(','));
+  for (let index = 1; index <= localStorage.length; index++) {
+    if(localStorage[index] != "null") {
+      const item = (localStorage.getItem(index).split(','));
       if (item[0] == data_Product[0] && item[1] == data_Product[1]) {
-        sessionStorage.setItem(index, [data_Product[0] , data_Product[1], input.valueAsNumber ]);
+        localStorage.setItem(index, [data_Product[0] , data_Product[1], input.valueAsNumber ]);
       }
     }
   }
   updatePrice();
 }
-function verifForm(type, data) {
+function verifForm(type, data) // Fonction utilise des RegExp, prend le type de reg et une str
+{
   let emailReg = new RegExp('^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$');
   let nomReg = new RegExp("^[a-zA-Z ,.'-]+$");
   let addressReg = new RegExp("^[0-9]{1,3}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)+");
@@ -199,12 +205,13 @@ function verifForm(type, data) {
   }
 }
 
-function updatePrice() {
+function updatePrice() // get les donnée en vue d'une modification de qte
+{
   total[2] = 0;
   total[3] = 0;
-  for (let index = 1; index <= sessionStorage.length; index++) {
-    if (sessionStorage.getItem(index) != "null") {
-      const item = (sessionStorage.getItem(index).split(','));
+  for (let index = 1; index <= localStorage.length; index++) {
+    if (localStorage.getItem(index) != "null") {
+      const item = (localStorage.getItem(index).split(','));
       let qte = parseInt(item[2]);
 
       let price = fetch("http://localhost:3000/api/products/"+item[0])
@@ -223,7 +230,8 @@ function updatePrice() {
     }
   }
 }
-function printPrice (price , qte) {
+function printPrice (price , qte) // effectue le calcule pour modifier le prix 
+{
   total[2] = parseInt(total[2]) +qte;
   total[3] = parseInt(total[3])+(parseInt(price)*qte);
 

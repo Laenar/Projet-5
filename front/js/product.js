@@ -49,17 +49,17 @@ document.getElementById('addToCart').addEventListener("click", (event)=> //Gesti
 
     if (choixCouleur != 0 && choixQuantite) {
 
-        if (sessionStorage == 0) //Dans le cas ou c'est le premier produit ajouté au pannier.
+        if (localStorage == 0) //Dans le cas ou c'est le premier produit ajouté au pannier.
         {
-            sessionStorage.setItem((sessionStorage.length)+1, [id , choixCouleur, choixQuantite ]);
+            localStorage.setItem((localStorage.length)+1, [id , choixCouleur, choixQuantite ]);
         } else {
             let onStorage = false;
-            for (let index = 1; index <= sessionStorage.length; index++) // Recherche si le produit est deja dans le pannier
+            for (let index = 1; index <= localStorage.length; index++) // Recherche si le produit est deja dans le pannier
             {
-                const item = (sessionStorage.getItem(index).split(','));
+                const item = (localStorage.getItem(index).split(','));
                 if (item['0'] == id && item['1'] == choixCouleur ) {
                     let newQuantite = parseInt(choixQuantite) + parseInt(item['2']);
-                    sessionStorage.setItem(index, [id , choixCouleur, newQuantite ]); // ajouts au pannier de la nouvelle qte
+                    localStorage.setItem(index, [id , choixCouleur, newQuantite ]); // ajouts au pannier de la nouvelle qte
                     onStorage = true;
                     break;
                 }
@@ -67,7 +67,7 @@ document.getElementById('addToCart').addEventListener("click", (event)=> //Gesti
 
             if (!onStorage) // ajouts du produit que l'on veux ajouté si il n'est pas dans la liste 
             {
-                sessionStorage.setItem((sessionStorage.length)+1, [id , choixCouleur, choixQuantite ]);
+                localStorage.setItem((localStorage.length)+1, [id , choixCouleur, choixQuantite ]);
             }
         }    
         window.location.href ="cart.html"; // Nous envoie vers le panier
