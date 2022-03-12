@@ -5,4 +5,5 @@ if (newUrl.searchParams.get('id') == null) {
     document.location.href = 'index.html';
 } else {
     document.getElementById('orderId').textContent = orderId;
+    localStorage.clear();
 }

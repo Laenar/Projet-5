@@ -154,15 +154,21 @@ function delProduct (article, data_Product) {
 }
 // Fonction appeler par callBack modifie unequantité demande input et son id
 function changeQte (input, data_Product) {
-  for (let index = 1; index <= localStorage.length; index++) {
-    if(localStorage[index] != "null") {
-      const item = (localStorage.getItem(index).split(','));
-      if (item[0] == data_Product[0] && item[1] == data_Product[1]) {
-        localStorage.setItem(index, [data_Product[0] , data_Product[1], input.valueAsNumber ]);
+
+  if (parseInt(input.valueAsNumber )>0) {
+    for (let index = 1; index <= localStorage.length; index++) {
+      if(localStorage[index] != "null") {
+        const item = (localStorage.getItem(index).split(','));
+        if (item[0] == data_Product[0] && item[1] == data_Product[1]) {
+          localStorage.setItem(index, [data_Product[0] , data_Product[1], input.valueAsNumber ]);
+        }
       }
     }
+    updatePrice();
+  } else {
+    alert("Valure non conforme");
   }
-  updatePrice();
+  
 }
 function verifForm(type, data) // Fonction utilise des RegExp, prend le type de reg et une str
 {

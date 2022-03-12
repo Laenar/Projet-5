@@ -47,7 +47,7 @@ document.getElementById('addToCart').addEventListener("click", (event)=> //Gesti
     let choixCouleur = document. getElementById("colors").value;
     let choixQuantite = document.getElementById("quantity").value;
 
-    if (choixCouleur != 0 && choixQuantite) {
+    if (choixCouleur != 0 && parseInt(choixQuantite)>0) {
 
         if (localStorage == 0) //Dans le cas ou c'est le premier produit ajouté au pannier.
         {
